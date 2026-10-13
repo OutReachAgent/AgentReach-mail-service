@@ -49,8 +49,14 @@ npm run start:dev
 Health endpoint:
 
 ```text
-GET http://localhost:3020/health
+GET http://localhost:3020/api/health
 ```
+
+The internal submission endpoint is available at
+`POST /api/internal/messages` and requires the `x-internal-mail-secret`
+header. It remains disabled until the durable queue and MTA worker are
+implemented; keep `MAIL_ACCEPT_SUBMISSIONS=false` outside local contract
+testing.
 
 ## Planned modules
 
