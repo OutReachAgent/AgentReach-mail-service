@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { DeliveryService } from './delivery/delivery.service';
 import { HealthController } from './health/health.controller';
 import { InternalController } from './internal/internal.controller';
 import { MessagesModule } from './messages/messages.module';
@@ -10,6 +11,7 @@ import { MessagesModule } from './messages/messages.module';
     MessagesModule,
   ],
   controllers: [HealthController, InternalController],
+  providers: [DeliveryService],
 })
 export class AppModule {}
 

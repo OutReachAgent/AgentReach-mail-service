@@ -5,7 +5,22 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class MailAttachmentDto {
+  @IsString()
+  @MaxLength(255)
+  name!: string;
+
+  @IsString()
+  @MaxLength(255)
+  contentType!: string;
+
+  @IsString()
+  contentBase64!: string;
+}
 
 export class SubmitMessageDto {
   @IsString()
@@ -45,5 +60,11 @@ export class SubmitMessageDto {
   @IsOptional()
   @IsString()
   html?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MailAttachmentDto)
+  attachments?: MailAttachmentDto[];
 }
 

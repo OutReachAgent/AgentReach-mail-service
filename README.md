@@ -54,9 +54,21 @@ GET http://localhost:3020/api/health
 
 The internal submission endpoint is available at
 `POST /api/internal/messages` and requires the `x-internal-mail-secret`
-header. It remains disabled until the durable queue and MTA worker are
-implemented; keep `MAIL_ACCEPT_SUBMISSIONS=false` outside local contract
-testing.
+header. Submissions require both `MAIL_ACCEPT_SUBMISSIONS=true` and a
+configured `SMTP_HOST`. The service sends synchronously through that SMTP
+transport and retries transient failures before returning `SENT`.
+
+For local development, point `SMTP_HOST` at Mailpit (`127.0.0.1`, port
+`1025`) or another local SMTP sink. For internet delivery, point it at a
+Postfix instance that owns the sending IP and has SPF, DKIM, DMARC, reverse
+DNS, and port 25 configured for the sending domain.
+
+Set `SMTP_HELO_NAME` to the public hostname whose A record points to the
+outbound server, such as `mail.example.com`. The sender domain still needs the
+TXT verification record and the SPF/DKIM/DMARC records required by the MTA.
+
+The current delivery transport is intentionally synchronous while the durable
+Mongo/Redis queue is being built. Do not expose the internal endpoint publicly.
 
 ## Planned modules
 
@@ -82,10 +94,10 @@ mail-specific operational controls.
 
 ## Delivery milestones
 
-1. Add the provider-neutral submission contract and health checks.
-2. Add domain verification and sender identity storage.
-3. Add durable queueing and idempotent delivery records.
-4. Integrate a staging MTA with DKIM and TLS.
+1. Add the provider-neutral submission contract and health checks. **Done**
+2. Add domain verification and sender identity storage. **Done in the API**
+3. Add SMTP/Postfix delivery with retry and idempotency protection. **Initial transport done**
+4. Add durable queueing and idempotent delivery records.
 5. Add inbound replies, bounces, and suppression.
 6. Connect the AgentReach backend behind a feature flag.
 7. Run low-volume pilot traffic before removing SES.
